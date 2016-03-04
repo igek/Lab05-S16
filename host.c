@@ -18,7 +18,7 @@
  * There is also a 10 millisecond delay in the loop caused by
  * the system call "usleep".  This puts the host to sleep for a
  * fixed amount of time, 10ms.  The purpose of his delay is
- * to ensure tha all nodes process their tasks at the same
+ * to ensure that all nodes process their tasks at the same
  * rate: all nodes will do
  * some tasks then sleep for a fixed amount of time, then do
  * additional tasks then sleep for a fixed amount of time, etc.  
