@@ -21,4 +21,7 @@ utilities.o: utilities.c
 link.o:  link.c
 	gcc -c link.c
 
+clean:
+	rm net367 host.o utilities.o link.o man.o main.o net.o
+
 
