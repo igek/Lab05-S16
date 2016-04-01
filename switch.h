@@ -3,6 +3,7 @@
  */
 
 #define MAXENTRIES 100
+#include "queue.h"
 #include "table.h"
 #include "link.h"
 
@@ -18,4 +19,4 @@ typedef struct{ /* state of switch */
 
 void switchMain(switchState *sstate);
 
-void switchInit(swithState *sstate, int physid);
+void switchInit(switchState *sstate, int physid);

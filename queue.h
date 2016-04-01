@@ -7,9 +7,9 @@ typedef struct{
 	Node* tail;
 } Queue;
 
-void initQ(Queue* q);
+void initQueue(Queue* q);
 
-void in(Queue* q, Entry e);
-Entry out(Queue* q);
+void add(Queue* q, Entry e);
+Entry delete(Queue* q);
 
-int isEmpty(Queue* q);
+int empty(Queue* q);

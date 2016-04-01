@@ -213,6 +213,7 @@ while(1) {
       hstate->rcvPacketBuff = tmpbuff;
       hstate->rcvPacketBuff.new = 1;
       hstate->rcvPacketBuff.valid = 1;
+      hstate->rcvflag = 1;
    }
 
    /* The host goes to sleep for 10 ms */
@@ -414,6 +415,7 @@ fclose(fp);
  */
 void hostClearRcvFlg(hostState * hstate, char replymsg[])
 {
+hstate->rcvflag = 0;
 hstate->rcvPacketBuff.valid = 0;
 hstate->rcvPacketBuff.new = 0;
 
@@ -487,6 +489,7 @@ hstate->netaddr = physid; /* default address */
 hstate->nbraddr = EMPTY_ADDR;  
 hstate->rcvPacketBuff.valid = 0;
 hstate->rcvPacketBuff.new = 0;
+hstate->rcvflag = 0;
 }
 
 
