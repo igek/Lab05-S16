@@ -58,6 +58,9 @@
 void hostInitState(hostState * hstate, int physid); 
 void hostInitRcvPacketBuff(packetBuffer * packetbuff);
 void hostInitSendPacketBuff(packetBuffer * packetbuff);
+void hostInitRcvFileBuff(fileBuffer * filebuff);
+void hostInitSendFileBuff(fileBuffer * filebuff);
+
 
 /*
  * hostMain is the main loop for the host. It has an infinite loop.
@@ -88,8 +91,10 @@ void hostSetNetAddr(hostState * hstate, int netaddr, char replymsg[]);
 void hostSetMainDir(hostState * hstate, char filename[], char replymsg[]);
 void hostClearRcvFlg(hostState * hstate, char replymsg[]);
 void hostUploadPacket(hostState * hstate, char fname[], char replymsg[]); 
+void hostUploadFile(hostState *hstate, char fname[], char replymsg[]);
 void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[]); 
 void hostTransmitPacket(hostState * hstate, char word[], char replymsg[]);
+void hostTransmitFile(hostState *hstate, char word[], char replymsg[]);
 void hostGetHostState(hostState * hstate, managerLink * manLink, char replymsg[]);
 
 /* 
@@ -136,6 +141,59 @@ strcpy(replymsg,"Packet sent");
 }
 
 
+void hostTransmitFile(hostState * hstate, char word[], char replymsg[]) {
+	char dest[1000];
+	int dstaddr;
+	int length;
+	int fileBuffLength = hstate->sendFileBuff.length;
+	int i;
+	int j = 0;
+
+	/* Get the destination address from the manager'scommand message (word[]) */
+	findWord(dest, word, 3);
+	dstaddr = ascii2Int(dest);
+
+	/*
+	 * Set up the send packet buffer's source and destination addresses
+	 */
+	while(fileBuffLength>0) {
+		if(fileBuffLength>198){
+			fileBuffLength = fileBuffLength - 198;
+			length = 200;
+			hstate->sendPacketBuff.payload[0] = '0';
+			hstate->sendPacketBuff.payload[1] = length-2;
+		}
+		else {
+			length = fileBuffLength+2;
+			fileBuffLength = fileBuffLength-198;
+			hstate->sendPacketBuff.payload[0]= '1';
+			hstate->sendPacketBuff.payload[0] = length-2;
+		}
+		hstate->sendPacketBuff.valid = 1;
+		hstate->sendPacketBuff.length = length;
+		hstate->sendPacketBuff.dstaddr = dstaddr;
+		hstate->sendPacketBuff.srcaddr = hstate->netaddr;
+
+		for(i = 2; i<length; i++)
+			hstate->sendPacketBuff.payload[i] = hstate->sendFileBuff.payload[j+i-2];
+
+		j = j+198;
+		usleep(TENMILLISEC);
+
+		/* Transmit the packet on the link */
+		linkSend(&(hstate->linkout), &(hstate->sendPacketBuff));
+
+		/* Testing */
+		printf("%d\n", hstate->sendPacketBuff.length);
+
+		/* Message to be sent back to the manager */
+		strcpy(replymsg,"Packet sent");
+	}
+
+
+
+}
+
 /* 
  * Main loop of the host node
  *
@@ -157,6 +215,8 @@ char word[1000];
 int  value;
 char replymsg[1000];   /* Reply message to be displayed at the manager */
 packetBuffer tmpbuff;
+int i;
+int j = 0;
 
 while(1) {
 
@@ -210,10 +270,23 @@ while(1) {
     * receive packet buffer
     */
    if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.new == 1) {
-      hstate->rcvPacketBuff = tmpbuff;
-      hstate->rcvPacketBuff.new = 1;
-      hstate->rcvPacketBuff.valid = 1;
-      hstate->rcvflag = 1;
+	   if(tmpbuff.payload[0] == '0'){	// Type 0 Packet
+		   for(i=2; i<tmpbuff; i++){
+			   hstate->rcvFileBuff.payload[i-2+j] = tmpbuff.payload[i];
+		   }
+		   j = j+198;
+	   }
+	   else{	// Type 1 Packet
+		   for(i=2; i<tmpbuff; i++){
+			   hstate->rcvFileBuff.payload[i-2+j] = tmpbuff.payload[i];
+		   }
+		   j = j + tmpbuff.length - 2;
+		   hstate->rcvFileBuff.length = j;
+		   j = 0;
+	   }
+	   hstate->rcvFileBuff.new = 1;
+	   hstate->rcvFileBuff.valid = 1;
+	   hstate->rcvflag = 1;
    }
 
    /* The host goes to sleep for 10 ms */
@@ -285,7 +358,9 @@ hostInitState(hstate, physid);     /* Initialize host's state */
 
 /* Initialize the receive and send packet buffers */
 hostInitRcvPacketBuff(&(hstate->rcvPacketBuff));  
-hostInitSendPacketBuff(&(hstate->rcvPacketBuff)); 
+hostInitSendPacketBuff(&(hstate->sendPacketBuff));
+hostInitRcvFileBuff(&(hstate->rcvFileBuff));
+hostInitSendFileBuff(&(hstate->sendFileBuff));
 }
 
 /* 
@@ -297,6 +372,10 @@ packetbuff->valid = 0;
 packetbuff->new = 0;
 }
 
+void hostInitSendFileBuff(fileBuffer * filebuff) {
+	filebuff->valid = 0;
+	filebuff->new = 0;
+}
 
 /* 
  * Upload a file in the main directory into the send packet buffer
@@ -359,6 +438,63 @@ strcpy(replymsg, "Upload successful");
 fclose(fp);
 }
 
+void hostUploadFile(hostState * hstate, char fname[], char replymsg[]) {
+	char c;
+	FILE * fp;
+	char path[MAXBUFFER];  /* Path to the file */
+	char tempbuff[FILE_LENGTH]; /* A temporary buffer */
+	int length;
+	int i;
+
+	/*
+	 * Upload the file into tempbuff
+	 */
+
+	if (hstate->maindirvalid == 0) {
+	   strcpy(replymsg, "Upload aborted:  the host's main directory is not yet chosen");
+	   return;
+	}
+
+	/* Create a path to the file and then open it */
+	strcpy(path,"");
+	strcat(path, hstate->maindir);
+	strcat(path, "/");
+	strcat(path, fname);
+
+	fp = fopen(path,"rb");
+	if (fp == NULL) { /* file didn't open */
+	   strcpy(replymsg, "Upload aborted: the file didn't open");
+	   return;
+	}
+
+	length = fread(tempbuff, 1, FILE_LENGTH+1, fp);
+
+	if (length==0) {
+	   strcpy(replymsg, "Upload aborted: error in reading the file");
+	   return;
+	}
+	else if (length > FILE_LENGTH) {
+	   strcpy(replymsg, "Upload aborted: file is too big");
+	   return;
+	}
+
+	tempbuff[length] = '\0';
+
+	/* Fill in send packet buffer */
+
+	hstate->sendFileBuff.valid=1;
+	hstate->sendFileBuff.length=length;
+
+	for (i=0; i<length; i++) { /* Store tempbuff in payload of packet buffer */
+	   hstate->sendFileBuff.payload[i] = tempbuff[i];
+	}
+
+	/* Message to the manager */
+	strcpy(replymsg, "Upload successful");
+
+	fclose(fp);
+}
+
 /* 
  * Initialize receive packet buffer 
  */ 
@@ -367,6 +503,11 @@ void hostInitRcvPacketBuff(packetBuffer * packetbuff)
 {
 packetbuff->valid = 0;
 packetbuff->new = 0;
+}
+
+void hostInitRcvFileBuff(fileBuffer * filebuff) {
+	filebuff->valid = 0;
+	filebuff->new = 0;
 }
 
 /*
@@ -382,7 +523,7 @@ char path[MAXBUFFER];  /* Path to the file */
 
 /* Create a path to the file and then open it */
 
-if (hstate->rcvPacketBuff.valid == 0) {
+if (hstate->rcvFileBuff.valid == 0) {
    strcpy(replymsg, "Download aborted: the receive packet buffer is empty");
    return;
 }
@@ -400,9 +541,9 @@ printf("host:  path to the file: %s\n",path);
 fp = fopen(path,"wb"); 
 
 /* Download the packet buffer payload into the file */
-if (hstate->rcvPacketBuff.new == 1) {
-   fwrite(hstate->rcvPacketBuff.payload,1,hstate->rcvPacketBuff.length,fp);
-   hstate->rcvPacketBuff.new=0;
+if (hstate->rcvFileBuff.new == 1) {
+   fwrite(hstate->rcvFileBuff.payload,1,hstate->rcvFileBuff.length,fp);
+   hstate->rcvFileBuff.new=0;
 }
 
 /* Message sent to the manager */
