@@ -13,6 +13,7 @@
 #include "man.h"
 #include "host.h"
 #include "net.h"
+#include "switch.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates the empty address */
                              /* It also indicates that the broadcast address */
@@ -86,7 +87,7 @@ for (physid = 0; physid < (hosts + switches); physid++) {
       if(physid < switches) { // Switch
         switchInit(&sstate, physid);
         k = netHostOutLink(&linkArray, physid);
-        sstate.out = linkArray.link[k];
+        sstate.linkout = linkArray.link[k];
         
         k = netHostInLink(&linkArray, physid);
         sstate.linkin = linkArray.link[k];
