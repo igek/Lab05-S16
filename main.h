@@ -2,6 +2,11 @@
 #define PAYLOAD_LENGTH 200 /* Maximum payload size */
 #define FILE_LENGTH 2000	/* Maximum payload size of file */
 
+/* Global Variables */
+extern int hosts;
+extern int links;
+extern int switches;
+
 typedef struct { /* Packet buffer */
    int srcaddr;  /* Source address */
    int dstaddr;  /* Destination addres */
