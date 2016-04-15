@@ -36,7 +36,6 @@
  * -switchInitQueue to initialize the switch packet queue
  * -switchInitFwdTable to initialize the switch forwarding table
  */
-void switchInitFwdTable(switchState * sstate);
 
 void switchInit(switchState *sstate, int physid) {
     sstate->physid = physid;
@@ -67,6 +66,54 @@ void switchInitFwdTable(switchState * sstate) {
         sstate->FwdTable[i][2] = 0;
     }
 }
+
+/* Functions for Queue */
+void switchInitQueue(Queue * switchQ) {
+    switchQ->size = 0;
+    switchQ->head = (switchNode*)malloc(sizeof(switchNode));
+    switchQ->tail = (switchNode*)malloc(sizeof(switchNode));
+    
+    switchQ->head->next = switchQ->tail;
+    switchQ->head->prev = NULL;
+    
+    switchQ->tail->prev = switchQ->head;
+    switchQ->tail->next = NULL;
+}
+
+void push(Queue *Q, packetBuffer data) {
+    switchNode * addNode = (switchNode*)malloc(sizeof(switchNode));
+    
+    /* Define the new node attributes */
+    addNode->node = data;
+    addNode->next = Q->head->next;
+    addNode->prev = Q->head;
+    
+    /* Change pointers */
+    Q->head->next->prev = addNode;
+    Q->head->next = addNode;
+    Q->size++;
+}
+
+packetBuffer pop(Queue *Q) {
+    switchNode * current;
+    switchNode * previous;
+    packetBuffer data;
+    
+    if(Q->size > 0) {
+        current = Q->tail->prev;
+        previous = current->prev;
+        
+        Q->tail->prev = previous;
+        previous->next = Q->tail;
+        data = current->node;
+        
+        free(current);
+        Q->size--;
+        
+        return data;
+    }
+}
+
 
 void switchMain(switchState *sstate, linkArrayType *linkArray, char *fileName) {
     char packetData[MAXBUFFER];
