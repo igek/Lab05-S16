@@ -7,8 +7,10 @@ typedef struct { /* Packet buffer */
    int dstaddr;  /* Destination addres */
    int length;   /* Length of packet */
    char payload[PAYLOAD_LENGTH + 1];  /* Payload section */
+   char segmentPayload[200];
    int valid;   /* Indicates if the contents is valid */ 
    int new;     /* Indicates if the contents has been downloaded */
+   int rcvlink;
 } packetBuffer;
 
    
