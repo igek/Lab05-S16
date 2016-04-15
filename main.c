@@ -21,9 +21,9 @@
 #define PIPEWRITE 1 
 #define PIPEREAD  0
 
-//extern int hosts;
-//extern int switches;
-//extern int links;
+int hosts;
+int switches;
+int links;
 
 void main()
 {
