@@ -127,12 +127,27 @@ close(manLinkArray->link[hostid].toHost[PIPEWRITE]);
  * just two links between two hosts
  */
 
-void netSetNetworkTopology(linkArrayType * linkArray)
+void netSetNetworkTopology(linkArrayType * linkArray, char *filename)
 {
-linkArray->link[0].uniPipeInfo.physIdSrc = 0;
-linkArray->link[0].uniPipeInfo.physIdDst = 1;
-linkArray->link[1].uniPipeInfo.physIdSrc = 1;
-linkArray->link[1].uniPipeInfo.physIdDst = 0;
+FILE *file = fopen(filename, "r");
+char line[10];
+char *end;
+int src, dst;
+int i = 0;
+
+if(file != NULL) {
+  while(fgets(line, sizeof(line), file) != NULL) {
+    src = strtol(line, &end, 10);
+    dst = strtol(end, &end, 10);
+    
+    if(line[0] != '-') {
+      linkArray->link[i].uniPipeInfo.physIdSrc = src;
+      linkArray->link[i].uniPipeInfo.physIdDst = dst;
+    }
+    
+    i++;
+  }
+}
 }
 
 /*
