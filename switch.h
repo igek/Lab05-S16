@@ -38,7 +38,7 @@ typedef struct {                     /* State of switch */
 
 void switchMain(switchState * sstate, linkArrayType *linkArray, char *fileName);
 void switchInit(switchState * sstate, int physid);
-void SwitchInitQueue(Queue * switchQ);
+void switchInitQueue(Queue * switchQ);
 void switchInitFwdTable(switchState * sstate);
 void push(Queue *Q, packetBuffer data);
 packetBuffer pop(Queue *Q);
