@@ -25,6 +25,6 @@ switch.o: switch.c
 	gcc -c switch.c
 
 clean:
-	rm net367 host.o utilities.o link.o man.o main.o net.o
+	rm net367 host.o utilities.o link.o man.o main.o net.o switch.o
 
 
