@@ -37,26 +37,6 @@
  * -switchInitFwdTable to initialize the switch forwarding table
  */
 
-void switchInit(switchState *sstate, int physid) {
-    sstate->physid = physid;
-    sstate->netaddr = physid;
-    sstate->root = physid;
-    sstate->dist = 0;
-    sstate->parent = 0;
-    sstate->rcvPacketBuff.valid = 0;
-    sstate->rcvPacketBuff.new = 0;
-    
-    sstate->sendSwitchInfo.srcaddr = physid;
-    sstate->sendSwitchInfo.length = 4;
-    sstate->rcvSwitchInfo.valid = 0;
-    sstate->rcvSwitchInfo.new = 0;
-    
-    switchInitQueue(&sstate->packetQ);
-    switchInitFwdTable(sstate);
-
-    usleep(TENMILLISEC);
-}
-
 void switchInitFwdTable(switchState * sstate) {
     int i;
     
@@ -114,7 +94,25 @@ packetBuffer pop(Queue *Q) {
     }
 }
 
+void switchInit(switchState *sstate, int physid) {
+    sstate->physid = physid;
+    sstate->netaddr = physid;
+    sstate->root = physid;
+    sstate->dist = 0;
+    sstate->parent = 0;
+    sstate->rcvPacketBuff.valid = 0;
+    sstate->rcvPacketBuff.new = 0;
+    
+    sstate->sendSwitchInfo.srcaddr = physid;
+    sstate->sendSwitchInfo.length = 4;
+    sstate->rcvSwitchInfo.valid = 0;
+    sstate->rcvSwitchInfo.new = 0;
+    
+    switchInitQueue(&sstate->packetQ);
+    switchInitFwdTable(sstate);
 
+    usleep(TENMILLISEC);
+}
 void switchMain(switchState *sstate, linkArrayType *linkArray, char *fileName) {
     char packetData[MAXBUFFER];
     int i, j, destaddr, srcaddr;
