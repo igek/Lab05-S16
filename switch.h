@@ -38,52 +38,6 @@ typedef struct {                     /* State of switch */
 
 void switchMain(switchState * sstate, linkArrayType *linkArray, char *fileName);
 void switchInit(switchState * sstate, int physid);
+void SwitchInitQueue(Queue * switchQ);
 void push(Queue *Q, packetBuffer data);
 packetBuffer pop(Queue *Q);
-
-/* Functions for Queue */
-void switchInitQueue(Queue * switchQ) {
-    switchQ->size = 0;
-    switchQ->head = (switchNode*)malloc(sizeof(switchNode));
-    switchQ->tail = (switchNode*)malloc(sizeof(switchNode));
-    
-    switchQ->head->next = switchQ->tail;
-    switchQ->head->prev = NULL;
-    
-    switchQ->tail->prev = switchQ->head;
-    switchQ->tail->next = NULL;
-}
-
-void push(Queue *Q, packetBuffer data) {
-    switchNode * addNode = (switchNode*)malloc(sizeof(switchNode));
-    
-    /* Define the new node attributes */
-    addNode->node = data;
-    addNode->next = Q->head->next;
-    addNode->prev = Q->head;
-    
-    /* Change pointers */
-    Q->head->next->prev = addNode;
-    Q->head->next = addNode;
-    Q->size++;
-}
-
-packetBuffer pop(Queue *Q) {
-    switchNode * current;
-    switchNode * previous;
-    packetBuffer data;
-    
-    if(Q->size > 0) {
-        current = Q->tail->prev;
-        previous = current->prev;
-        
-        Q->tail->prev = previous;
-        previous->next = Q->tail;
-        data = current->node;
-        
-        free(current);
-        Q->size--;
-        
-        return data;
-    }
-}
