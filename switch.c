@@ -27,9 +27,9 @@
 #define PIPEREAD 0
 #define TENMILLISEC 10000 /* 10 millisecond sleep */
 
-//extern int hosts;
-//extern int links;
-//extern int switches;
+extern int hosts;
+extern int links;
+extern int switches;
 
 /*
  * switchInit initializes the switch. It calls:
