@@ -271,13 +271,13 @@ while(1) {
     */
    if (tmpbuff.dstaddr == hstate->netaddr && tmpbuff.valid == 1 && tmpbuff.new == 1) {
 	   if(tmpbuff.payload[0] == '0'){	// Type 0 Packet
-		   for(i=2; i<tmpbuff; i++){
+		   for(i=2; i<tmpbuff.length; i++){
 			   hstate->rcvFileBuff.payload[i-2+j] = tmpbuff.payload[i];
 		   }
 		   j = j+198;
 	   }
 	   else{	// Type 1 Packet
-		   for(i=2; i<tmpbuff; i++){
+		   for(i=2; i<tmpbuff.length; i++){
 			   hstate->rcvFileBuff.payload[i-2+j] = tmpbuff.payload[i];
 		   }
 		   j = j + tmpbuff.length - 2;
