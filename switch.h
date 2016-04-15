@@ -2,10 +2,6 @@
  * switch.h
  */
 
-extern int hosts;
-extern int links;
-extern int switches;
-
 #define MAX_HOSTS 1000
 typedef struct switchPacket {
     packetBuffer node;
