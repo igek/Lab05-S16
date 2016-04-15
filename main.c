@@ -20,6 +20,10 @@
 #define PIPEWRITE 1 
 #define PIPEREAD  0
 
+extern int hosts;
+extern int switches;
+extern int links;
+
 void main()
 {
 hostState hstate;             /* The host's state */
