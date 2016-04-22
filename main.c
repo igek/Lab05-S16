@@ -23,8 +23,6 @@
 #define PIPEWRITE 1 
 #define PIPEREAD  0
 
-#define DIRSIZE 20
-
 int main()
 {
 	hostState hstate;           /* The host's state */

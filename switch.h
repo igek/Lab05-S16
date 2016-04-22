@@ -20,12 +20,12 @@
 
 #define TENMILLISEC 10000
 #define BROADCAST 1010
-#define SWITDATA 4
+#define SWITCHDATA 4
 
 typedef struct {
 	char switchid;					/* identification of switch */
 	int numConnects;				/* number of host connected to switch */
-	int table[MAXCONT][SWITDATA];	/* switch routing table */
+	int table[MAXCONT][SWITCHDATA];	/* switch routing table */
 	int tableIndex;					/* next index to use for the table */
 	packetBuffer sendPacketBuff;	/* send packet buffer */
 	packetBuffer rcvPacketBuff;		/* receive packet buffer */
