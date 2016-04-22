@@ -1,7 +1,10 @@
 /* Definitions and prototypes for the link (link.c)
  */
 
-#define NUMLINKS 2
+#ifndef LINK_H
+#define LINK_H
+
+#include "netconfig.h"
 
 enum LinkType {UNIPIPE}; /* UNIPIPE = unidirectional pipe
                           * We can add more types later
@@ -25,7 +28,7 @@ typedef struct {  /* Has all the information to implement a link */
 
 typedef struct {
    int numlinks;
-   LinkInfo link[NUMLINKS];
+   LinkInfo link[MAXNODE];
 } linkArrayType;
 
 /* Transmit the packet in pbuff on the link */
@@ -40,3 +43,4 @@ int linkClear(LinkInfo * link);
 /* Initializes a link */
 int linkCreate(LinkInfo * link);
 
+#endif

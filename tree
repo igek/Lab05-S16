@@ -1,0 +1,9 @@
+H 0 TestDir0 1000
+H 1 TestDir1 1111
+H 2 TestDir2 2222
+H 3 TestDir3 3333
+H 4 TestDir4 4444
+S A 0 1 D
+S B 2 3 D
+S C 4 D
+S D A B C

@@ -1,7 +1,7 @@
 # Make file
 
-net367: host.o utilities.o link.o man.o net.o switch.o main.o
-	gcc -o net367 host.o utilities.o link.o man.o net.o switch.o main.o
+net367: real_clean host.o utilities.o link.o man.o net.o switch.o main.o netconfig.o
+	gcc -o net367 host.o utilities.o link.o man.o net.o switch.o main.o netconfig.o
 
 main.o: main.c
 	gcc -c main.c
@@ -25,6 +25,7 @@ switch.o: switch.c
 	gcc -c switch.c
 
 clean:
-	rm net367 host.o utilities.o link.o man.o main.o net.o switch.o
+	rm -f *.o
 
-
+real_clean: clean
+	rm -f net367

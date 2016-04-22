@@ -102,8 +102,6 @@ char word[1000];
 int count;
 int k;
 int wordptr;
-char lowbits;
-char highbits;
 
 n = 0;
 
@@ -139,12 +137,18 @@ if (link->linkType==UNIPIPE) {
        *  and the second symbol is the low order bits
        */
 
-      for (k = 0; k < pbuff->length; k++){
-         highbits = word[2*k]-'a';  
-         lowbits = word[2*k+1]-'a';
-         highbits = highbits * 16; /* Shift to the left by 4 bits */
-         pbuff->payload[k] = highbits + lowbits;
-      } /* end of for */
+      k = 0;
+	  wordptr=0;
+	  for (count=pbuff->length; count>0; count--) {
+		if (word[wordptr]=='*') {
+			wordptr++;
+			if (word[wordptr]=='A') pbuff->payload[k] = ' ';
+			else if (word[wordptr]=='B') pbuff->payload[k] = '\0';
+			else if (word[wordptr]=='C') pbuff->payload[k] = '*';
+		}else pbuff->payload[k] = word[wordptr];
+		wordptr++;
+		k++;
+  	  }
       pbuff->payload[k] = '\0';
       pbuff->valid=1;
       pbuff->new=1;
@@ -171,8 +175,6 @@ int  count;
 int  sendbuffptr;
 int  newptr;
 int  k;
-char lowbits;
-char highbits;
 
 /* Check if this send should be aborted */
 if (pbuff->valid == 0) {
@@ -215,17 +217,29 @@ appendWithSpace(sendbuff, word);
  * and the second byte is the low order bits.
  */
 
-for (k = 0; k < pbuff->length; k++) {
-   lowbits = pbuff->payload[k];
-   highbits = lowbits;
-   highbits = highbits/16; /* shift bits down by four bits */
-   highbits = highbits & 15; /* Mask out all bits except the last four */
-   lowbits = lowbits & 15;
-   newpayload[2*k] = highbits + 'a';
-   newpayload[2*k+1] = lowbits + 'a'; 
+k = 0;
+newptr = 0;
+	
+for (count=pbuff->length; count>0; count--) {
+	if (pbuff->payload[k] == ' ') {
+		newpayload[newptr++] = '*';
+		newpayload[newptr++] = 'A';
+	}
+	else if (pbuff->payload[k] == '\0') {
+		newpayload[newptr++] = '*';
+		newpayload[newptr++] = 'B';
+	} 
+	else if (pbuff->payload[k] == '*') {
+		newpayload[newptr++] = '*';
+		newpayload[newptr++] = 'C';
+	} 
+	else {
+		newpayload[newptr++] = pbuff->payload[k];
+	} 
+	k++;
 }
 
-newpayload[2*k] = '\0';
+newpayload[newptr] = '\0';
 
 appendWithSpace(sendbuff, newpayload);
 

@@ -39,6 +39,7 @@
 #include "link.h"
 #include "man.h"
 #include "host.h"
+#include "switch.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
                              /* It also indicates that the broadcast address */
@@ -127,27 +128,30 @@ close(manLinkArray->link[hostid].toHost[PIPEWRITE]);
  * just two links between two hosts
  */
 
-void netSetNetworkTopology(linkArrayType * linkArray, char *filename)
+void netSetNetworkTopology(linkArrayType * linkArray, netconf *netconfig)
 {
-FILE *file = fopen(filename, "r");
-char line[10];
-char *end;
-int src, dst;
-int i = 0;
-
-if(file != NULL) {
-  while(fgets(line, sizeof(line), file) != NULL) {
-    src = strtol(line, &end, 10);
-    dst = strtol(end, &end, 10);
-    
-    if(line[0] != '-') {
-      linkArray->link[i].uniPipeInfo.physIdSrc = src;
-      linkArray->link[i].uniPipeInfo.physIdDst = dst;
-    }
-    
-    i++;
-  }
-}
+    int numlinks = linkArray->numlinks;
+	int numswitch = netconfig->numSwitch;
+	int physid, i = 0, j = 0, k =0;
+	char c;
+	for(; i < numswitch; i++)
+	{	
+		
+		for(; j < netconfig->switchConnect[i]; j++)
+		{	c = netconfig->switches[i][j];
+			
+			if(c >= 48 && c <= 57)
+				physid = c - 48;
+			else physid = c;
+		
+			linkArray->link[k].uniPipeInfo.physIdSrc = physid;
+			linkArray->link[k].uniPipeInfo.physIdDst = netconfig->switchid[i];
+			linkArray->link[k+1].uniPipeInfo.physIdSrc = netconfig->switchid[i];
+			linkArray->link[k+1].uniPipeInfo.physIdDst = physid;
+			
+			k += 2;
+		}j = 0;
+	}
 }
 
 /*
@@ -191,6 +195,59 @@ if (index == linkArray->numlinks)
 return index; 
 }
 
+int netSwitchInLink(linkArrayType * linkArray, int switchid, int skip) 
+{	
+	int i;
+	int index;
+	index = linkArray->numlinks;
+	
+	for (i=0; i<linkArray->numlinks; i++) 
+	{
+		/* Store index if the outgoing link is found */
+		if (linkArray->link[i].uniPipeInfo.physIdDst == switchid)
+		{
+			if(skip <= 0)
+			{	index = i;
+				break;
+			}
+			else {
+				skip--;
+			}
+		}
+	}
+	if (index == linkArray->numlinks) 
+		printf("Error:  Can't find outgoing link for switch\n");
+	return index;
+}
+
+
+int netSwitchOutLink(linkArrayType * linkArray, int switchid, int skip) 
+{	
+	int i;
+	int index;
+	index = linkArray->numlinks;
+	
+	for (i=0; i<linkArray->numlinks; i++) 
+	{
+		/* Store index if the outgoing link is found */
+		if (linkArray->link[i].uniPipeInfo.physIdSrc == switchid) 
+		{
+			if(skip <= 0)
+			{	index = i;
+				break;
+			}
+			else {
+				skip--;
+			}
+		}
+		
+	}
+	if (index == linkArray->numlinks) 
+		printf("Error:  Can't find outgoing link for switch\n");
+	return index; 
+}
+
+
 /*
  * Close links not connected to the host
  */
@@ -204,6 +261,21 @@ for (i=0; i<linkArray->numlinks; i++) {
    if (linkArray->link[i].uniPipeInfo.physIdDst != hostid) 
       close(linkArray->link[i].uniPipeInfo.fd[PIPEREAD]);
 }
+}
+
+void netCloseSwitchOtherLinks(linkArrayType *linkArray, switchState *switchstate, int switchid)
+{
+	int numConnect = switchstate->numConnects;
+	int i, j;
+	for (i=0; i<linkArray->numlinks; i++) 
+	{	for (j=0; j < numConnect; j++)
+		{	
+			if (linkArray->link[i].uniPipeInfo.physIdSrc != switchid)
+				close(linkArray->link[i].uniPipeInfo.fd[PIPEWRITE]);
+			if (linkArray->link[i].uniPipeInfo.physIdDst != switchid)
+				close(linkArray->link[i].uniPipeInfo.fd[PIPEREAD]);
+		}
+	}
 }
 
 /* Close all links*/

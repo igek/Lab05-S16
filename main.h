@@ -1,29 +1,18 @@
+#ifndef MAIN_H
+#define MAIN_H
+
 
 #define PAYLOAD_LENGTH 200 /* Maximum payload size */
-#define FILE_LENGTH 2000	/* Maximum payload size of file */
+#define PAYLOAD_BUFFER 200 /* Maximum length of the processing buffer */
 
-/* Global Variables */
-extern int hosts;
-extern int links;
-extern int switches;
-
-typedef struct { /* Packet buffer */
-   int srcaddr;  /* Source address */
-   int dstaddr;  /* Destination addres */
-   int length;   /* Length of packet */
+typedef struct {  /* Packet buffer */
+   int srcaddr;      /* Source address */
+   int dstaddr;      /* Destination addres */
+   int length;    /* Length of packet */
    char payload[PAYLOAD_LENGTH + 1];  /* Payload section */
-   char segmentPayload[200];
-   int valid;   /* Indicates if the contents is valid */ 
-   int new;     /* Indicates if the contents has been downloaded */
-   int rcvlink;
+   int valid;     /* Indicates if the contents is valid */ 
+   int new;    /* Indicates if the contents has been downloaded */
+   int type;      /* Indicates type of packetbuffer */
 } packetBuffer;
 
-   
-typedef struct {
-	int srcaddr;  /* Source address */
-	int dstaddr;  /* Destination addres */
-	int length;   /* Length of packet */
-	char payload[FILE_LENGTH + 1];  /* Payload section */
-	int valid;   /* Indicates if the contents is valid */
-	int new;     /* Indicates if the contents has been downloaded */
-} fileBuffer;
+#endif

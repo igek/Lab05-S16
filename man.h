@@ -1,4 +1,5 @@
-#define NUMHOSTS 2
+// #define NUMHOSTS 2  set by config file
+#include "netconfig.h"
 
 typedef struct{ /* Connection used by the manager to a host */ 
    int toHost[2]; /* Pipe link to host */
@@ -7,7 +8,7 @@ typedef struct{ /* Connection used by the manager to a host */
 
 typedef struct {
    int numlinks;
-   managerLink link[NUMHOSTS];
+   managerLink link[MAXNODE];
 } manLinkArrayType;
 
 /* 
@@ -15,5 +16,4 @@ typedef struct {
  * the user and then executes the command
  */
 void manMain(manLinkArrayType * manLinkArray);
-
 
