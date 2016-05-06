@@ -251,3 +251,44 @@ if (link->linkType==UNIPIPE) {
 printf("Link %d transmitted\n",link->linkID);
 }
 
+int switchSend(LinkInfo * link, statePacket * sbuff)
+{
+char sendbuff[1000];  /* buffer to build the message */
+char word[1000];
+char newpayload[1000];
+int  count;
+int  sendbuffptr;
+int  newptr;
+int  k;
+
+if (sbuff->length > PAYLOAD_LENGTH) {
+   printf("packet too big\n");
+   return -1;
+} 
+
+if (pbuff->length <= 0) {
+   printf("packet too small\n");
+   return -1;
+}
+
+sendbuff[0] = ' ';  /* Start message with a space */
+sendbuff[1] = '\0';
+
+int2Ascii(word, sbuff->srcaddr);  /* Append source address */
+appendWithSpace(sendbuff, word);
+
+int2Ascii(word, sbuff->length);  /* Append payload length */
+appendWithSpace(sendbuff, word);
+
+int2Ascii(word, sbuff->root); /* Append switch's known root */
+appendWithSpace(sendbuff, word);
+
+appendWithSpace(sendbuff, '\0');
+
+if (link->linkType==UNIPIPE) {
+   write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff)); 
+}
+
+/* Used for DEBUG -- trace packets being sent */
+printf("Link %d transmitted\n",link->linkID);
+}
