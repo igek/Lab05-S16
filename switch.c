@@ -54,7 +54,7 @@ void SwitchMain(switchState * sw)
 		}
 		
 		if(j == 5) {
-			transmit(sw, &(sw->state), BROADCAST);
+			statetransmit(sw, &(sw->state), BROADCAST);
 		}
 		
 		/* The switch goes to sleep for 20 ms */
