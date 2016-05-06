@@ -121,6 +121,11 @@ void switchInit(switchState * switchstate)
 	/* Initialize the receive and send packet buffers */
 	hostInitRcvPacketBuff(&(switchstate->rcvPacketBuff));  
 	hostInitSendPacketBuff(&(switchstate->rcvPacketBuff)); 
+	
+	/* Initialize the network packet */
+	switchstate->state.srcadd = switchstate->physid;
+	switchstate->state.root = switchstate->physid;
+	switchstate->state.distance = 2147483647;		/* Infinity but maximum value for an int will have to suffice */
 }
 
 /* Initialize send packet buffer */
