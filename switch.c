@@ -133,8 +133,8 @@ void switchInitRcvPacketBuff(packetBuffer * packetbuff)
 void switchInit(switchState * switchstate)
 {	
 	/* Initialize the receive and send packet buffers */
-	hostInitRcvPacketBuff(&(switchstate->rcvPacketBuff));  
-	hostInitSendPacketBuff(&(switchstate->rcvPacketBuff)); 
+	switchInitRcvPacketBuff(&(switchstate->rcvPacketBuff));  
+	switchInitSendPacketBuff(&(switchstate->rcvPacketBuff)); 
 	
 	/* Initialize the network packet */
 	switchstate->state.srcaddr = switchstate->switchid;
