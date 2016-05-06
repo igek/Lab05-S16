@@ -128,13 +128,13 @@ void statetransmit(switchState * sw, statePacket * sbuff, int sendval)
 	
 	if(sendval != BROADCAST)
 	{	SendLink = sw->linkout[sendval];
-		linkSend(&SendLink, q_buffer);
+		linkSend(&SendLink, sbuff);
 	}
 	else
 	{	for(i = 0; i < sw->numConnects; i++)
 		{	if(sw->physidConnect[i] != sw->RecvID)
 			{	SendLink = sw->linkout[i];
-			 	linkSend(&SendLink, q_buffer);
+			 	linkSend(&SendLink, sbuff);
 			}
 		}
 	}
