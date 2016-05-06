@@ -283,7 +283,7 @@ appendWithSpace(sendbuff, word);
 int2Ascii(word, sbuff->root); /* Append switch's known root */
 appendWithSpace(sendbuff, word);
 
-appendWithSpace(sendbuff, '\0');
+sendbuff[strlen(sendbuff)] = '\0';
 
 if (link->linkType==UNIPIPE) {
    write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff)); 
