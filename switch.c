@@ -108,13 +108,13 @@ void transmit(switchState * sw, packetBuffer * q_buffer, int sendval)
 	
 	if(sendval != BROADCAST)
 	{	SendLink = sw->linkout[sendval];
-		linkSend(&SendLink, q_buffer);
+		switchSend(&SendLink, q_buffer);
 	}
 	else
 	{	for(i = 0; i < sw->numConnects; i++)
 		{	if(sw->physidConnect[i] != sw->RecvID)
 			{	SendLink = sw->linkout[i];
-			 	linkSend(&SendLink, q_buffer);
+			 	switchSend(&SendLink, q_buffer);
 			}
 		}
 	}
