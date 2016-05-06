@@ -18,6 +18,8 @@ void SwitchMain(switchState * sw)
 	packetBuffer queue[1000];
 	packetBuffer q_buffer;
 	
+	switchPacket sbuff;
+	
 	/* Switch Node While Loop */
 	while(1)
 	{		
@@ -33,6 +35,8 @@ void SwitchMain(switchState * sw)
 				insertFIFO(&queue, &pbuff, sizeof(packetBuffer), &head, &tail, 1000);
 				break;
 			}
+			
+			switchReceive(&(sw->linkin[host]), &sbuff);
 		}
 		
 		/* Transmit first packet of queue */
