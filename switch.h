@@ -23,16 +23,17 @@
 #define SWITCHDATA 4
 
 typedef struct {
-	char switchid;					/* identification of switch */
-	int numConnects;				/* number of host connected to switch */
-	int table[MAXCONT][SWITCHDATA];	/* switch routing table */
-	int tableIndex;					/* next index to use for the table */
-	packetBuffer sendPacketBuff;	/* send packet buffer */
+	char switchid;				/* identification of switch */
+	int numConnects;			/* number of host connected to switch */
+	int table[MAXCONT][SWITCHDATA];		/* switch routing table */
+	int tableIndex;				/* next index to use for the table */
+	packetBuffer sendPacketBuff;		/* send packet buffer */
 	packetBuffer rcvPacketBuff;		/* receive packet buffer */
 	int physidConnect[MAXCONT];		/* Physical IDs of the connected nodes */
 	LinkInfo linkin[MAXCONT];		/* Incoming communication link */
 	LinkInfo linkout[MAXCONT];		/* Outgoing communication link */
-	int RecvID;						/* Physical ID of Incoming Packet */
+	int RecvID;				/* Physical ID of Incoming Packet */
+	statePacket state;			/* Network state packet */
 } switchState;
 
 
