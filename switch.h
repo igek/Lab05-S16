@@ -41,8 +41,8 @@ typedef struct {
  * - hostInitRcvPacketBuff, which initializes the receive packet buffer
  * - hostInitSendPacketBuff, which initializes the send packet buffer
  */
-void swtichInitRcvPacketBuff(packetBuffer * packetbuff);
-void swtichInitSendPacketBuff(packetBuffer * packetbuff);
+void switchInitRcvPacketBuff(packetBuffer * packetbuff);
+void switchInitSendPacketBuff(packetBuffer * packetbuff);
 void switchInit(switchState * switchstate); 
 void switchMain(switchState * switchstate); 
 
