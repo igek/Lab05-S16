@@ -16,6 +16,7 @@ typedef struct {  /* Packet buffer */
 } packetBuffer;
 
 typedef struct {
+   int scraddr;
    int type;
    int length;
    int root;
