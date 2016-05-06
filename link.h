@@ -37,6 +37,12 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff);
 /* Downloads a packet from the link into pbuff */
 int linkReceive(LinkInfo * link, packetBuffer * pbuff);
 
+/* Transmit the packet nbuff on the link */
+int switchSend(LinkInfo *link, statePacket *sbuff);
+
+/* Downloads a network packet from the link into sbuff */
+int switchReceive(LinkInfo *link, statePacket *sbuff);
+
 /* Closes a link */
 int linkClear(LinkInfo * link);
 
