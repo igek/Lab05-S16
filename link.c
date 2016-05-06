@@ -266,7 +266,7 @@ if (sbuff->length > PAYLOAD_LENGTH) {
    return -1;
 } 
 
-if (pbuff->length <= 0) {
+if (sbuff->length <= 0) {
    printf("packet too small\n");
    return -1;
 }
