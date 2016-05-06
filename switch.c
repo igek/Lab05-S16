@@ -54,7 +54,7 @@ void SwitchMain(switchState * sw)
 		}
 		
 		if(j == 5) {
-			transmit(sw, &state, BROADCAST);
+			transmit(sw, &(sw->state), BROADCAST);
 		}
 		
 		/* The switch goes to sleep for 20 ms */
@@ -108,13 +108,13 @@ void transmit(switchState * sw, packetBuffer * q_buffer, int sendval)
 	
 	if(sendval != BROADCAST)
 	{	SendLink = sw->linkout[sendval];
-		switchSend(&SendLink, q_buffer);
+		linkSend(&SendLink, q_buffer);
 	}
 	else
 	{	for(i = 0; i < sw->numConnects; i++)
 		{	if(sw->physidConnect[i] != sw->RecvID)
 			{	SendLink = sw->linkout[i];
-			 	switchSend(&SendLink, q_buffer);
+			 	linkSend(&SendLink, q_buffer);
 			}
 		}
 	}
@@ -128,13 +128,13 @@ void statetransmit(switchState * sw, statePacket * sbuff, int sendval)
 	
 	if(sendval != BROADCAST)
 	{	SendLink = sw->linkout[sendval];
-		linkSend(&SendLink, sbuff);
+		stateSend(&SendLink, sbuff);
 	}
 	else
 	{	for(i = 0; i < sw->numConnects; i++)
 		{	if(sw->physidConnect[i] != sw->RecvID)
 			{	SendLink = sw->linkout[i];
-			 	linkSend(&SendLink, sbuff);
+			 	stateSend(&SendLink, sbuff);
 			}
 		}
 	}
