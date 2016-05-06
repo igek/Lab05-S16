@@ -37,10 +37,8 @@ typedef struct {
 } switchState;
 
 
-/* - switchInit which initializes the host.
- * - hostInitRcvPacketBuff, which initializes the receive packet buffer
- * - hostInitSendPacketBuff, which initializes the send packet buffer
- */
+
+
 void switchInitRcvPacketBuff(packetBuffer * packetbuff);
 void switchInitSendPacketBuff(packetBuffer * packetbuff);
 void switchInit(switchState * switchstate); 
