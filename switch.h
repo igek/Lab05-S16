@@ -49,5 +49,6 @@ void update_table(switchState * sw, packetBuffer * pbuff, int check_host);
 void insertFIFO(void *buffer, void *item, unsigned itemSize, int * head, int * tail, int bufferSize);
 void removeFIFO(void *buffer, void *item, unsigned itemSize, int * head, int * tail, int bufferSize);
 void transmit(switchState * sw, packetBuffer * q_buffer, int sendval);
+void switchTransmit(switchState * sw, statePacket * sbuff, int sendval);
 
 #endif
