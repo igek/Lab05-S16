@@ -15,4 +15,12 @@ typedef struct {  /* Packet buffer */
    int type;      /* Indicates type of packetbuffer */
 } packetBuffer;
 
+typedef struct {
+   int type;
+   int length;
+   int root;
+   int distance;
+   int child;
+} statePacket;
+
 #endif
