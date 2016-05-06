@@ -52,9 +52,15 @@ void SwitchMain(switchState * sw)
 				if(host == sw->numConnects) transmit(sw, &q_buffer, BROADCAST);
 			}
 		}
+		
+		if(j == 5) {
+			transmit(sw, &state, BROADCAST);
+		}
+		
 		/* The switch goes to sleep for 20 ms */
 		usleep(TENMILLISEC);
 		usleep(TENMILLISEC);
+		j++;
 	}
 }
 
@@ -96,6 +102,26 @@ void removeFIFO(void *buffer, void *item, unsigned itemSize, int * head, int * t
 
 /* Transmit a packetBuffer */
 void transmit(switchState * sw, packetBuffer * q_buffer, int sendval)
+{	
+	LinkInfo SendLink;
+	int i, j;
+	
+	if(sendval != BROADCAST)
+	{	SendLink = sw->linkout[sendval];
+		linkSend(&SendLink, q_buffer);
+	}
+	else
+	{	for(i = 0; i < sw->numConnects; i++)
+		{	if(sw->physidConnect[i] != sw->RecvID)
+			{	SendLink = sw->linkout[i];
+			 	linkSend(&SendLink, q_buffer);
+			}
+		}
+	}
+}
+
+/* Transmit a packetBuffer */
+void statetransmit(switchState * sw, statePacket * sbuff, int sendval)
 {	
 	LinkInfo SendLink;
 	int i, j;
