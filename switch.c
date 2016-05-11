@@ -12,7 +12,7 @@
 /* Main Switch Function */
 void SwitchMain(switchState * sw)
 {
-	int check_host, host, j;
+	int check_host, host, j = 0;
 	int packet_length;
 	int head = 0;
 	int tail = 0;
@@ -21,6 +21,9 @@ void SwitchMain(switchState * sw)
 	packetBuffer q_buffer;
 	
 	statePacket *sbuff;
+	statePacket stateq[1000];
+	statePacket sq_buffer;
+	int shead = 0, stail = 0;
 	
 	/* Switch Node While Loop */
 	while(1)
@@ -37,8 +40,15 @@ void SwitchMain(switchState * sw)
 				insertFIFO(&queue, &pbuff, sizeof(packetBuffer), &head, &tail, 1000);
 				break;
 			}
-			
+		}
+		
+		for(host = 0; host < sw->numConnects; host++) {
 			switchReceive(&(sw->linkin[host]), sbuff);
+			
+			if(sbuff->length != 0) {
+				insertFIFO(&stateq, &sbuff, sizeof(statePacket), &shead, &stail, 1000);
+				break;
+			}
 		}
 		
 		/* Transmit first packet of queue */
@@ -59,8 +69,17 @@ void SwitchMain(switchState * sw)
 			}
 		}
 		
+		if(shead != stail) {
+			removeFIFO(&stateq, &sq_buffer, sizeof(statePacket), &shead, &stail, 1000);
+			if(sq_buffer.root < sw->state.root) {
+				printf("DEBUG: SWITCH %c changing root from %d to %d.\n", sw->switchid, sw->state.root, sq_buffer.root);
+				sw->state.root = sq_buffer.root;
+			}
+		}
+		
 		if(j == 5) {
 			statetransmit(sw, &(sw->state), BROADCAST);
+			j = 0;
 		}
 		
 		/* The switch goes to sleep for 20 ms */
