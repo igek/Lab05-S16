@@ -283,6 +283,12 @@ appendWithSpace(sendbuff, word);
 int2Ascii(word, sbuff->root); /* Append switch's known root */
 appendWithSpace(sendbuff, word);
 
+int2Ascii(word, sbuff->distance); /* Append switch's distance to root */
+appendWithSpace(sendbuff, word);
+
+int2Ascii(word, sbuff->child); /* Append switch's child */
+appendWithSpace(sendbuff, word);
+
 sendbuff[strlen(sendbuff)] = '\0';
 
 if (link->linkType==UNIPIPE) {
@@ -291,4 +297,42 @@ if (link->linkType==UNIPIPE) {
 
 /* Used for DEBUG -- trace packets being sent */
 printf("Link %d transmitted\n",link->linkID);
+}
+
+int switchReceive(LinkInfo *link, statePacket *sbuff) {
+   int n = 0;
+   char buffer[1000];
+   char word[1000];
+   int count;
+   int k;
+   int wordptr;
+
+   if (link->linkType==UNIPIPE) {
+      n = read(link->uniPipeInfo.fd[PIPEREAD], buffer, 1000);
+      if (n > 0) {
+         /* 
+          * Something is received on link. 
+          * Store it in the packet buffer
+          */
+   
+         buffer[n] = '\0';
+
+         findWord(word, buffer, 2); /* Source address */
+         sbuff->srcaddr = ascii2Int(word);
+   
+         findWord(word, buffer, 3); /* Length */
+         sbuff->length = ascii2Int(word);
+         
+         findWord(word, buffer, 4); /* Root */
+         sbuff->root = ascii2Int(word);
+         
+         findWord(word, buffer, 5); /* Distance */
+         sbuff->distance = ascii2Int(word);
+         
+         findWord(word, buffer, 6); /* Child */
+         sbuff->child = ascii2Int(word);
+      }
+   }
+         
+   return n; /* Return length what was received on the link */ 
 }

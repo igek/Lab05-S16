@@ -4,7 +4,9 @@
  * A switch is a process spawned by the main function in main.c
  *
  */
- 
+
+#include "main.h"
+#include "link.h"
 #include "switch.h"
 
 /* Main Switch Function */
@@ -18,7 +20,7 @@ void SwitchMain(switchState * sw)
 	packetBuffer queue[1000];
 	packetBuffer q_buffer;
 	
-	switchPacket sbuff;
+	statePacket *sbuff;
 	
 	/* Switch Node While Loop */
 	while(1)
@@ -36,7 +38,7 @@ void SwitchMain(switchState * sw)
 				break;
 			}
 			
-			switchReceive(&(sw->linkin[host]), &sbuff);
+			switchReceive(&(sw->linkin[host]), sbuff);
 		}
 		
 		/* Transmit first packet of queue */

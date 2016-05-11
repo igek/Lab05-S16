@@ -17,11 +17,11 @@ typedef struct {  /* Packet buffer */
 
 typedef struct {
    int srcaddr;
-   int type;
    int length;
    int root;
    int distance;
    int child;
+   int type;
 } statePacket;
 
 #endif
